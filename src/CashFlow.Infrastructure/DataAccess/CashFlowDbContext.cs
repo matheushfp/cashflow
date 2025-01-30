@@ -33,6 +33,10 @@ internal class CashFlowDbContext : DbContext
         modelBuilder.Entity<Expense>(entity =>
         {
             entity.Property(p => p.PaymentType).HasColumnName("payment_type");
+
+            entity.Property(p => p.Title).HasColumnType("varchar(255)");
+            entity.Property(p => p.Description).HasColumnType("varchar(2000)");
+            entity.Property(p => p.Amount).HasColumnType("decimal(10,2)");
         });
     }
 }

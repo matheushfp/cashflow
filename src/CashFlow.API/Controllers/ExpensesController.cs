@@ -10,9 +10,10 @@ public class ExpensesController : ControllerBase
 {
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
-    public IActionResult Register([FromBody] RegisterExpenseRequest request)
+    public IActionResult Register(
+        [FromServices] IRegisterExpenseUseCase useCase,
+        [FromBody] RegisterExpenseRequest request)
     {
-        var useCase = new RegisterExpenseUseCase();
         var response = useCase.Execute(request);
 
         return Created(string.Empty, response);
