@@ -22,14 +22,19 @@ public class ExceptionFilter : IExceptionFilter
 
     private void HandleProjectException(ExceptionContext context)
     {
-        if (context.Exception is ValidationErrorException)
+        if (context.Exception is ValidationErrorException validationErrorException)
         {
-            var ex = (ValidationErrorException)context.Exception;
-
-            var errorResponse = new ErrorResponse(ex.Errors);
+            var errorResponse = new ErrorResponse(validationErrorException.Errors);
 
             context.HttpContext.Response.StatusCode = StatusCodes.Status400BadRequest;
             context.Result = new BadRequestObjectResult(errorResponse);
+        }
+        else if (context.Exception is NotFoundException notFoundException)
+        {
+            var errorResponse = new ErrorResponse(notFoundException.Message);
+
+            context.HttpContext.Response.StatusCode = StatusCodes.Status404NotFound;
+            context.Result = new NotFoundObjectResult(errorResponse);
         }
         else
         {
