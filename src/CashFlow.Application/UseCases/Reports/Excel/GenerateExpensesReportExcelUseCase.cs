@@ -8,6 +8,7 @@ namespace CashFlow.Application.UseCases.Reports.Excel;
 
 public class GenerateExpensesReportExcelUseCase : IGenerateExpensesReportExcelUseCase
 {
+    private const string CURRENCY_SYMBOL = "$";
     private readonly IExpensesReadOnlyRepository _repository;
 
     public GenerateExpensesReportExcelUseCase(IExpensesReadOnlyRepository repository)
@@ -22,7 +23,7 @@ public class GenerateExpensesReportExcelUseCase : IGenerateExpensesReportExcelUs
         if (expenses.Count == 0)
             return [];
 
-        var workbook = new XLWorkbook();
+        using var workbook = new XLWorkbook();
 
         workbook.Author = "CashFlow";
         workbook.Style.Font.FontSize = 12;
@@ -38,11 +39,16 @@ public class GenerateExpensesReportExcelUseCase : IGenerateExpensesReportExcelUs
             worksheet.Cell($"A{row}").Value = expense.Title;
             worksheet.Cell($"B{row}").Value = expense.Date;
             worksheet.Cell($"C{row}").Value = ConvertPaymentType(expense.PaymentType);
+
             worksheet.Cell($"D{row}").Value = expense.Amount;
+            worksheet.Cell($"D{row}").Style.NumberFormat.Format = $"-{CURRENCY_SYMBOL} #,##0.00";
+            
             worksheet.Cell($"E{row}").Value = expense.Description;
 
             row++;
         }
+
+        worksheet.Columns().AdjustToContents();
 
         var file = new MemoryStream();
         workbook.SaveAs(file);
@@ -71,7 +77,7 @@ public class GenerateExpensesReportExcelUseCase : IGenerateExpensesReportExcelUs
         worksheet.Cell("E1").Value = ResourceReportMessages.DESCRIPTION;
 
         worksheet.Cells("A1:E1").Style.Font.Bold = true;
-        worksheet.Cells("A1:E1").Style.Fill.BackgroundColor = XLColor.FromHtml("#6394ff");
+        worksheet.Cells("A1:E1").Style.Fill.BackgroundColor = XLColor.FromHtml("#78d5f7");
 
         worksheet.Cell("A1").Style.Alignment.SetHorizontal(XLAlignmentHorizontalValues.Center);
         worksheet.Cell("B1").Style.Alignment.SetHorizontal(XLAlignmentHorizontalValues.Center);
