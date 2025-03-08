@@ -51,7 +51,6 @@ public class GenerateExpensesReportPdfUseCase : IGenerateExpensesReportPdfUseCas
             AddExpenseTitle(row.Cells[0], expense.Title);
             AddAmountHeader(row.Cells[3]);
             
-
             row = table.AddRow();
             row.Height = ROW_HEIGHT_EXPENSE_TABLE;
 
@@ -66,6 +65,21 @@ public class GenerateExpensesReportPdfUseCase : IGenerateExpensesReportPdfUseCas
             SetBaseStyleForExpenseInformation(row.Cells[2]);
 
             AddAmountForExpense(row.Cells[3], expense.Amount);
+
+            if(!string.IsNullOrWhiteSpace(expense.Description))
+            {
+                var descriptionRow= table.AddRow();
+                descriptionRow.Height = ROW_HEIGHT_EXPENSE_TABLE;
+
+                descriptionRow.Cells[0].AddParagraph(expense.Description);
+                descriptionRow.Cells[0].Format.Font = new Font { Name = FontHelper.WORKSANS_REGULAR, Size = 10, Color = ColorHelper.BLACK };
+                descriptionRow.Cells[0].Shading.Color = ColorHelper.GREEN_LIGHT;
+                descriptionRow.Cells[0].VerticalAlignment = VerticalAlignment.Center;
+                descriptionRow.Cells[0].MergeRight = 2;
+                descriptionRow.Cells[0].Format.LeftIndent = 20;
+
+                row.Cells[3].MergeDown = 1;
+            }
 
             AddWhiteSpace(table);           
         }
