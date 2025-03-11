@@ -1,4 +1,6 @@
-﻿using CashFlow.Domain.Entities;
+﻿using System.Text.RegularExpressions;
+using CashFlow.Domain.Entities;
+using Humanizer;
 using Microsoft.EntityFrameworkCore;
 
 namespace CashFlow.Infrastructure.DataAccess;
@@ -8,6 +10,7 @@ internal class CashFlowDbContext : DbContext
     public CashFlowDbContext(DbContextOptions options) : base(options) { }
 
     public DbSet<Expense> Expenses { get; set; }
+    public DbSet<User> Users { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -16,11 +19,11 @@ internal class CashFlowDbContext : DbContext
             var tableName = entity.GetTableName();
 
             if(!(string.IsNullOrEmpty(tableName)))
-                entity.SetTableName(tableName.ToLower());
+                entity.SetTableName(tableName.Pluralize().ToLowerInvariant());
 
             foreach (var property in entity.GetProperties())
             {
-                property.SetColumnName(property.GetColumnName().ToLower());
+                property.SetColumnName(ConvertToSnakeCase(property.GetColumnName()));
             }        
         }
 
@@ -32,5 +35,10 @@ internal class CashFlowDbContext : DbContext
             entity.Property(p => p.Description).HasColumnType("varchar(2000)");
             entity.Property(p => p.Amount).HasColumnType("decimal(10,2)");
         });
+    }
+
+    private string ConvertToSnakeCase(string input)
+    {
+        return Regex.Replace(input, @"([a-z])([A-Z])", "$1_$2").ToLowerInvariant();
     }
 }
