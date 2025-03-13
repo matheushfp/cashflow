@@ -135,6 +135,9 @@
   <data name="INVALID_EMAIL" xml:space="preserve">
     <value>L'email n'est pas valide</value>
   </data>
+  <data name="INVALID_PASSWORD" xml:space="preserve">
+    <value>Votre mot de passe doit comporter au moins 8 caractères, contenant au moins une lettre majuscule, une lettre minuscule, un chiffre et un caractère spécial</value>
+  </data>
   <data name="PAYMENT_TYPE_INVALID" xml:space="preserve">
     <value>Le type de paiement n'est pas valide</value>
   </data>
