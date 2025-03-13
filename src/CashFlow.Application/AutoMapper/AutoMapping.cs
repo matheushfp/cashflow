@@ -16,6 +16,7 @@ public class AutoMapping : Profile
     private void RequestToEntity()
     {
         CreateMap<ExpenseRequest, Expense>();
+        CreateMap<RegisterUserRequest, User>();
     }
 
     private void EntityToResponse()
