@@ -2,6 +2,7 @@
 using CashFlow.Communication.Requests;
 using CashFlow.Communication.Responses;
 using CashFlow.Domain.Entities;
+using CashFlow.Domain.Repositories;
 using CashFlow.Domain.Repositories.Users;
 using CashFlow.Domain.Security.Cryptography;
 using CashFlow.Exception;
@@ -15,15 +16,22 @@ public class RegisterUserUseCase : IRegisterUserUseCase
     private readonly IMapper _mapper;
     private readonly IPasswordEncrypter _passwordEncrypter;
     private readonly IUsersReadOnlyRepository _usersReadOnlyRepository;
+    private readonly IUsersWriteOnlyRepository _userWriteOnlyRepository;
+    private readonly IUnitOfWork _unitOfWork;
 
     public RegisterUserUseCase(
         IMapper mapper, 
         IPasswordEncrypter passwordEncrypter, 
-        IUsersReadOnlyRepository usersReadOnlyRepository)
+        IUsersReadOnlyRepository usersReadOnlyRepository,
+        IUsersWriteOnlyRepository usersWriteOnlyRepository,
+        IUnitOfWork unitOfWork        
+        )
     {
         _mapper = mapper;
         _passwordEncrypter = passwordEncrypter;
         _usersReadOnlyRepository = usersReadOnlyRepository;
+        _userWriteOnlyRepository = usersWriteOnlyRepository;
+        _unitOfWork = unitOfWork;
     }
 
     public async Task<RegisterUserResponse> Execute(RegisterUserRequest request)
@@ -32,6 +40,10 @@ public class RegisterUserUseCase : IRegisterUserUseCase
 
         var user = _mapper.Map<User>(request);
         user.Password = _passwordEncrypter.Encrypt(request.Password);
+
+        await _userWriteOnlyRepository.Add(user);
+        
+        await _unitOfWork.Commit();
 
         return new RegisterUserResponse
         {
