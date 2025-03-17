@@ -5,6 +5,7 @@ using CashFlow.Domain.Entities;
 using CashFlow.Domain.Repositories;
 using CashFlow.Domain.Repositories.Users;
 using CashFlow.Domain.Security.Cryptography;
+using CashFlow.Domain.Security.Tokens;
 using CashFlow.Exception;
 using CashFlow.Exception.ExceptionsBase;
 using FluentValidation.Results;
@@ -17,6 +18,7 @@ public class RegisterUserUseCase : IRegisterUserUseCase
     private readonly IPasswordEncrypter _passwordEncrypter;
     private readonly IUsersReadOnlyRepository _usersReadOnlyRepository;
     private readonly IUsersWriteOnlyRepository _userWriteOnlyRepository;
+    private readonly IAccessTokenGenerator _tokenGenerator;
     private readonly IUnitOfWork _unitOfWork;
 
     public RegisterUserUseCase(
@@ -24,6 +26,7 @@ public class RegisterUserUseCase : IRegisterUserUseCase
         IPasswordEncrypter passwordEncrypter, 
         IUsersReadOnlyRepository usersReadOnlyRepository,
         IUsersWriteOnlyRepository usersWriteOnlyRepository,
+        IAccessTokenGenerator tokenGenerator,
         IUnitOfWork unitOfWork        
         )
     {
@@ -31,6 +34,7 @@ public class RegisterUserUseCase : IRegisterUserUseCase
         _passwordEncrypter = passwordEncrypter;
         _usersReadOnlyRepository = usersReadOnlyRepository;
         _userWriteOnlyRepository = usersWriteOnlyRepository;
+        _tokenGenerator = tokenGenerator;
         _unitOfWork = unitOfWork;
     }
 
@@ -47,7 +51,8 @@ public class RegisterUserUseCase : IRegisterUserUseCase
 
         return new RegisterUserResponse
         {
-            Name = user.Name
+            Name = user.Name,
+            Token = _tokenGenerator.Generate(user)
         };
     }
 
