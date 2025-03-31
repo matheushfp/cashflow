@@ -53,7 +53,7 @@ public class RegisterUserUseCaseTest
     private RegisterUserUseCase CreateUseCase(string? email = null)
     {
         var mapper = MapperBuilder.Build();
-        var passwordEncrypter = PasswordEncrypterBuilder.Build();
+        var passwordEncrypter = new PasswordEncrypterBuilder().Build();
         var usersReadOnlyRepository = new UsersReadOnlyRepositoryBuilder();
         var usersWriteOnlyRepository = UsersWriteOnlyRepositoryBuilder.Build();
         var tokenGenerator = AccessTokenGeneratorBuilder.Build();
