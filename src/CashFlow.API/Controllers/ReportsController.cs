@@ -1,11 +1,14 @@
 ﻿using System.Net.Mime;
 using CashFlow.Application.UseCases.Reports.Excel;
 using CashFlow.Application.UseCases.Reports.Pdf;
+using CashFlow.Domain.Enums;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CashFlow.API.Controllers;
 [Route("api/report")]
 [ApiController]
+[Authorize(Roles = Roles.ADMIN)]
 public class ReportsController : ControllerBase
 {
     [HttpGet("excel")]
