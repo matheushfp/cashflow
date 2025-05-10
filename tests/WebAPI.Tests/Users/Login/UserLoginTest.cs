@@ -1,7 +1,5 @@
 ﻿using System.Globalization;
 using System.Net;
-using System.Net.Http.Headers;
-using System.Net.Http.Json;
 using System.Text.Json;
 using CashFlow.Communication.Requests;
 using CashFlow.Exception;
@@ -10,17 +8,15 @@ using FluentAssertions;
 using WebAPI.Tests.InlineData;
 
 namespace WebAPI.Tests.Users.Login;
-public class UserLoginTest : IClassFixture<CustomWebApplicationFactory>
+public class UserLoginTest : CashFlowClassFixture
 {
     private const string LOGIN_URI = "api/login";
-    private readonly HttpClient _httpClient;
     private readonly string _email;
     private readonly string _password;
     private readonly string _name;
 
-    public UserLoginTest(CustomWebApplicationFactory webApplicationFactory)
+    public UserLoginTest(CustomWebApplicationFactory webApplicationFactory) : base(webApplicationFactory)
     {
-        _httpClient = webApplicationFactory.CreateClient();
         _email = webApplicationFactory.GetEmail();
         _password = webApplicationFactory.GetPassword();
         _name = webApplicationFactory.GetName();
@@ -35,7 +31,7 @@ public class UserLoginTest : IClassFixture<CustomWebApplicationFactory>
             Password = _password
         };
 
-        var result = await _httpClient.PostAsJsonAsync(LOGIN_URI, request);
+        var result = await DoPost(LOGIN_URI, request);
 
         result.StatusCode.Should().Be(HttpStatusCode.OK);
 
@@ -48,13 +44,11 @@ public class UserLoginTest : IClassFixture<CustomWebApplicationFactory>
 
     [Theory]
     [ClassData(typeof(CultureInlineDataTest))]
-    public async Task InvalidLoginError(string cultureInfo)
+    public async Task InvalidLoginError(string culture)
     {
         var request = LoginRequestBuilder.Build();
 
-        _httpClient.DefaultRequestHeaders.AcceptLanguage.Add(new StringWithQualityHeaderValue(cultureInfo));
-
-        var result = await _httpClient.PostAsJsonAsync(LOGIN_URI, request);
+        var result = await DoPost(requestUri: LOGIN_URI, request: request, culture: culture);
 
         result.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
 
@@ -63,7 +57,7 @@ public class UserLoginTest : IClassFixture<CustomWebApplicationFactory>
 
         var errors = response.RootElement.GetProperty("errors").EnumerateArray();
 
-        var expectedMessage = ResourceErrorMessages.ResourceManager.GetString("INVALID_CREDENTIALS", new CultureInfo(cultureInfo));
+        var expectedMessage = ResourceErrorMessages.ResourceManager.GetString("INVALID_CREDENTIALS", new CultureInfo(culture));
 
         errors.Should().HaveCount(1).And.Contain(error => error.GetString()!.Equals(expectedMessage));
     }

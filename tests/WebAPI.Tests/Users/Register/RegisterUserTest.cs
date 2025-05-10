@@ -1,7 +1,5 @@
 ﻿using System.Globalization;
 using System.Net;
-using System.Net.Http.Headers;
-using System.Net.Http.Json;
 using System.Text.Json;
 using CashFlow.Exception;
 using CommonTestUtilities.Requests;
@@ -9,14 +7,12 @@ using FluentAssertions;
 using WebAPI.Tests.InlineData;
 
 namespace WebAPI.Tests.Users.Register;
-public class RegisterUserTest : IClassFixture<CustomWebApplicationFactory>
+public class RegisterUserTest : CashFlowClassFixture
 {
     private const string REGISTER_USER_URI = "api/users";
-    private readonly HttpClient _httpClient;
 
-    public RegisterUserTest(CustomWebApplicationFactory webApplicationFactory)
+    public RegisterUserTest(CustomWebApplicationFactory webApplicationFactory) : base(webApplicationFactory)
     {
-        _httpClient = webApplicationFactory.CreateClient();
     }
 
     [Fact]
@@ -24,7 +20,7 @@ public class RegisterUserTest : IClassFixture<CustomWebApplicationFactory>
     {
         var request = RegisterUserRequestBuilder.Build();
 
-        var result = await _httpClient.PostAsJsonAsync(REGISTER_USER_URI, request);
+        var result = await DoPost(REGISTER_USER_URI, request);
 
         result.StatusCode.Should().Be(HttpStatusCode.Created);
         
@@ -37,14 +33,12 @@ public class RegisterUserTest : IClassFixture<CustomWebApplicationFactory>
 
     [Theory]
     [ClassData(typeof(CultureInlineDataTest))]
-    public async Task EmptyNameError(string cultureInfo)
+    public async Task EmptyNameError(string culture)
     {
         var request = RegisterUserRequestBuilder.Build();
         request.Name = string.Empty;
 
-        _httpClient.DefaultRequestHeaders.AcceptLanguage.Add(new StringWithQualityHeaderValue(cultureInfo));
-
-        var result = await _httpClient.PostAsJsonAsync(REGISTER_USER_URI, request);
+        var result = await DoPost(requestUri: REGISTER_USER_URI, request: request, culture: culture);
 
         result.StatusCode.Should().Be(HttpStatusCode.BadRequest);
 
@@ -53,7 +47,7 @@ public class RegisterUserTest : IClassFixture<CustomWebApplicationFactory>
 
         var errors = response.RootElement.GetProperty("errors").EnumerateArray();
 
-        var expectedMessage = ResourceErrorMessages.ResourceManager.GetString("EMPTY_NAME", new CultureInfo(cultureInfo));
+        var expectedMessage = ResourceErrorMessages.ResourceManager.GetString("EMPTY_NAME", new CultureInfo(culture));
 
         errors.Should().HaveCount(1).And.Contain(error => error.GetString()!.Equals(expectedMessage));
     }

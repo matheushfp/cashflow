@@ -1,7 +1,5 @@
 ﻿using System.Globalization;
 using System.Net;
-using System.Net.Http.Headers;
-using System.Net.Http.Json;
 using System.Text.Json;
 using CashFlow.Exception;
 using CommonTestUtilities.Requests;
@@ -9,15 +7,13 @@ using FluentAssertions;
 using WebAPI.Tests.InlineData;
 
 namespace WebAPI.Tests.Expenses.Register;
-public class RegisterExpenseTest : IClassFixture<CustomWebApplicationFactory>
+public class RegisterExpenseTest : CashFlowClassFixture
 {
     private const string REGISTER_EXPENSE_URI = "api/expenses";
-    private readonly HttpClient _httpClient;
     private readonly string _token;
 
-    public RegisterExpenseTest(CustomWebApplicationFactory webApplicationFactory)
+    public RegisterExpenseTest(CustomWebApplicationFactory webApplicationFactory) : base(webApplicationFactory)
     {
-        _httpClient = webApplicationFactory.CreateClient();
         _token = webApplicationFactory.GetToken();
     }
 
@@ -26,9 +22,7 @@ public class RegisterExpenseTest : IClassFixture<CustomWebApplicationFactory>
     {
         var request = RegisterExpenseRequestBuilder.Build();
 
-        _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _token);
-
-        var result = await _httpClient.PostAsJsonAsync(REGISTER_EXPENSE_URI, request);
+        var result = await DoPost(requestUri: REGISTER_EXPENSE_URI, request: request, token: _token);
 
         result.StatusCode.Should().Be(HttpStatusCode.Created);
 
@@ -40,15 +34,12 @@ public class RegisterExpenseTest : IClassFixture<CustomWebApplicationFactory>
 
     [Theory]
     [ClassData(typeof(CultureInlineDataTest))]
-    public async Task EmptyTitleError(string cultureInfo)
+    public async Task EmptyTitleError(string culture)
     {
         var request = RegisterExpenseRequestBuilder.Build();
         request.Title = string.Empty;
 
-        _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _token);
-        _httpClient.DefaultRequestHeaders.AcceptLanguage.Add(new StringWithQualityHeaderValue(cultureInfo));
-
-        var result = await _httpClient.PostAsJsonAsync(REGISTER_EXPENSE_URI, request);
+        var result = await DoPost(requestUri: REGISTER_EXPENSE_URI, request: request, token: _token, culture: culture);
 
         result.StatusCode.Should().Be(HttpStatusCode.BadRequest);
 
@@ -57,7 +48,7 @@ public class RegisterExpenseTest : IClassFixture<CustomWebApplicationFactory>
 
         var errors = response.RootElement.GetProperty("errors").EnumerateArray();
 
-        var expectedMessage = ResourceErrorMessages.ResourceManager.GetString("TITLE_REQUIRED", new CultureInfo(cultureInfo));
+        var expectedMessage = ResourceErrorMessages.ResourceManager.GetString("TITLE_REQUIRED", new CultureInfo(culture));
         errors.Should().HaveCount(1).And.Contain(error => error.GetString()!.Equals(expectedMessage));
     }
 }
