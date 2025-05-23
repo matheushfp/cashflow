@@ -17,9 +17,9 @@ public class UserLoginTest : CashFlowClassFixture
 
     public UserLoginTest(CustomWebApplicationFactory webApplicationFactory) : base(webApplicationFactory)
     {
-        _email = webApplicationFactory.GetEmail();
-        _password = webApplicationFactory.GetPassword();
-        _name = webApplicationFactory.GetName();
+        _email = webApplicationFactory.UserTeamMember.GetEmail();
+        _password = webApplicationFactory.UserTeamMember.GetPassword();
+        _name = webApplicationFactory.UserTeamMember.GetName();
     }
 
     [Fact]
