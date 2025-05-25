@@ -16,7 +16,7 @@ public class RegisterExpenseUseCaseTest
     public async Task Success()
     {
         var user = UserBuilder.Build();
-        var request = RegisterExpenseRequestBuilder.Build();
+        var request = ExpenseRequestBuilder.Build();
         var useCase = CreateUseCase(user);
 
         var result = await useCase.Execute(request);
@@ -29,7 +29,7 @@ public class RegisterExpenseUseCaseTest
     public async Task EmptyTitleError()
     {
         var user = UserBuilder.Build();
-        var request = RegisterExpenseRequestBuilder.Build();
+        var request = ExpenseRequestBuilder.Build();
         request.Title = string.Empty;
 
         var useCase = CreateUseCase(user);
