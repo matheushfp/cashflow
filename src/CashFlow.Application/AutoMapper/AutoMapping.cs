@@ -25,5 +25,6 @@ public class AutoMapping : Profile
         CreateMap<Expense, RegisterExpenseResponse>();
         CreateMap<Expense, ExpenseShortResponse>();
         CreateMap<Expense, ExpenseResponse>();
+        CreateMap<User, UserProfileResponse>();
     }
 }
