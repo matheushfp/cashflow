@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CashFlow.Infrastructure.DataAccess.Repositories;
 
-internal class UsersRepository : IUsersReadOnlyRepository, IUsersWriteOnlyRepository
+internal class UsersRepository : IUsersReadOnlyRepository, IUsersWriteOnlyRepository, IUsersUpdateOnlyRepository
 {
     private readonly CashFlowDbContext _dbContext;
 
@@ -21,6 +21,16 @@ internal class UsersRepository : IUsersReadOnlyRepository, IUsersWriteOnlyReposi
     public async Task<User?> FindUserByEmail(string email)
     {
         return await _dbContext.Users.AsNoTracking().FirstOrDefaultAsync(user => user.Email.Equals(email));
+    }
+
+    public async Task<User> GetById(Guid id)
+    {
+        return await _dbContext.Users.FirstAsync(user => user.Id == id);
+    }
+
+    public void Update(User user)
+    {
+        _dbContext.Users.Update(user);
     }
 
     public async Task<bool> UserWithThisEmailAlreadyExists(string email)
