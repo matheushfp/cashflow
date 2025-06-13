@@ -12,7 +12,7 @@ public class UpdateUserValidator : AbstractValidator<UpdateUserRequest>
             .NotEmpty()
             .WithMessage(ResourceErrorMessages.EMPTY_EMAIL)
             .EmailAddress()
-            .When(user => string.IsNullOrEmpty(user.Email) == false, ApplyConditionTo.CurrentValidator)
+            .When(user => string.IsNullOrWhiteSpace(user.Email) == false, ApplyConditionTo.CurrentValidator)
             .WithMessage(ResourceErrorMessages.INVALID_EMAIL);
     }
 }
