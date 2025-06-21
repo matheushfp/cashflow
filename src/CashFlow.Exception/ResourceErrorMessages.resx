@@ -153,4 +153,7 @@
   <data name="UNKNOWN_ERROR" xml:space="preserve">
     <value>Unknown error</value>
   </data>
+  <data name="CURRENT_PASSWORD_MISMATCH" xml:space="preserve">
+    <value>The password entered is different from the current password</value>
+  </data>
 </root>
