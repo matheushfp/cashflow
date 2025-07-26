@@ -156,4 +156,7 @@
   <data name="CURRENT_PASSWORD_MISMATCH" xml:space="preserve">
     <value>A senha inserida é diferente da senha atual</value>
   </data>
+  <data name="INVALID_TAG" xml:space="preserve">
+    <value>Tag inválida</value>
+  </data>
 </root>

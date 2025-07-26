@@ -15,9 +15,14 @@ public class AutoMapping : Profile
 
     private void RequestToEntity()
     {
-        CreateMap<ExpenseRequest, Expense>();
         CreateMap<RegisterUserRequest, User>()
             .ForMember(dest => dest.Password, options => options.Ignore());
+
+        CreateMap<ExpenseRequest, Expense>()
+            .ForMember(dest => dest.Tags, options => options.MapFrom(source => source.Tags.Distinct()));
+        
+        CreateMap<Communication.Enums.Tag, Tag>()
+            .ForMember(dest => dest.Value, options => options.MapFrom(source => source));
     }
 
     private void EntityToResponse()

@@ -122,5 +122,11 @@ namespace CashFlow.Exception {
                 return ResourceManager.GetString("CURRENT_PASSWORD_MISMATCH", resourceCulture);
             }
         }
+        
+        public static string INVALID_TAG {
+            get {
+                return ResourceManager.GetString("INVALID_TAG", resourceCulture);
+            }
+        }
     }
 }
