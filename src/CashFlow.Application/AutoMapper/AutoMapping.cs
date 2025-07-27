@@ -27,9 +27,10 @@ public class AutoMapping : Profile
 
     private void EntityToResponse()
     {
+        CreateMap<Expense, ExpenseResponse>()
+            .ForMember(dest => dest.Tags, options => options.MapFrom(source => source.Tags.Select(tag => tag.Value)));
         CreateMap<Expense, RegisterExpenseResponse>();
         CreateMap<Expense, ExpenseShortResponse>();
-        CreateMap<Expense, ExpenseResponse>();
         CreateMap<User, UserProfileResponse>();
     }
 }
