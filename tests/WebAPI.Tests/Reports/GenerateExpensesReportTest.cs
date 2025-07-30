@@ -22,7 +22,8 @@ public class GenerateExpensesReportTest : CashFlowClassFixture
     [Fact]
     public async Task PdfSuccess()
     {
-        var result = await DoGet($"{GENERATE_REPORT_URI}/pdf?month={_expenseDate:Y}",  _adminToken);
+        var month = _expenseDate.ToString("yyyy-MM");
+        var result = await DoGet($"{GENERATE_REPORT_URI}/pdf?month={month}", _adminToken);
 
         result.StatusCode.Should().Be(HttpStatusCode.OK);
 
@@ -33,7 +34,8 @@ public class GenerateExpensesReportTest : CashFlowClassFixture
     [Fact]
     public async Task ExcelSuccess()
     {
-        var result = await DoGet($"{GENERATE_REPORT_URI}/excel?month={_expenseDate:Y}",  _adminToken);
+        var month = _expenseDate.ToString("yyyy-MM");
+        var result = await DoGet($"{GENERATE_REPORT_URI}/excel?month={month}",  _adminToken);
 
         result.StatusCode.Should().Be(HttpStatusCode.OK);
 
@@ -44,7 +46,8 @@ public class GenerateExpensesReportTest : CashFlowClassFixture
     [Fact]
     public async Task PdfForbiddenError()
     {
-        var result = await DoGet($"{GENERATE_REPORT_URI}/pdf?month={_expenseDate:Y}",  _teamMemberToken);
+        var month = _expenseDate.ToString("yyyy-MM");
+        var result = await DoGet($"{GENERATE_REPORT_URI}/pdf?month={month}",  _teamMemberToken);
 
         result.StatusCode.Should().Be(HttpStatusCode.Forbidden);
     }
@@ -52,7 +55,8 @@ public class GenerateExpensesReportTest : CashFlowClassFixture
     [Fact]
     public async Task ExcelForbiddenError()
     {
-        var result = await DoGet($"{GENERATE_REPORT_URI}/excel?month={_expenseDate:Y}",  _teamMemberToken);
+        var month = _expenseDate.ToString("yyyy-MM");
+        var result = await DoGet($"{GENERATE_REPORT_URI}/excel?month={month}",  _teamMemberToken);
 
         result.StatusCode.Should().Be(HttpStatusCode.Forbidden);
     }

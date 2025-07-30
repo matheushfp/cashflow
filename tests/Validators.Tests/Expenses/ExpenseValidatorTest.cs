@@ -4,9 +4,9 @@ using CashFlow.Exception;
 using CommonTestUtilities.Requests;
 using FluentAssertions;
 
-namespace Validators.Tests.Expenses.Register;
+namespace Validators.Tests.Expenses;
 
-public class RegisterExpenseValidatorTests
+public class ExpenseValidatorTest
 {
     [Fact]
     public void Success()
@@ -73,6 +73,22 @@ public class RegisterExpenseValidatorTests
         // Assert
         result.IsValid.Should().BeFalse();
         result.Errors.Should().ContainSingle().And.Contain(e => e.ErrorMessage.Equals(ResourceErrorMessages.EXPENSE_CANNOT_BE_IN_THE_FUTURE));
+    }
+
+    [Fact]
+    public void InvalidTagError()
+    {
+        // Arrange
+        var validator = new ExpenseValidator();
+        var request = ExpenseRequestBuilder.Build();
+        request.Tags.Add((Tag)444);
+
+        // Act
+        var result = validator.Validate(request);
+
+        // Assert
+        result.IsValid.Should().BeFalse();
+        result.Errors.Should().ContainSingle().And.Contain(e => e.ErrorMessage.Equals(ResourceErrorMessages.INVALID_TAG));
     }
 
     [Fact]
